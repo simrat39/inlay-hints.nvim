@@ -54,11 +54,11 @@ function M.enable_cache_autocmd()
 	vim.cmd(string.format(
 		[[
         augroup InlayHintsCache
-        autocmd BufWritePost,BufReadPost,BufEnter,BufWinEnter,TabEnter *.rs :lua require"inlay-hints".cache()
+        autocmd BufWritePost,BufReadPost,BufEnter,BufWinEnter,TabEnter * :lua require"inlay-hints".cache()
         %s
         augroup END
     ]],
-		opts.only_current_line and "autocmd CursorMoved *.rs :lua require'inlay-hints'.render()" or ""
+		opts.only_current_line and "autocmd CursorMoved * :lua require'inlay-hints'.render()" or ""
 	))
 end
 
