@@ -100,22 +100,35 @@ local function parse_hints(result)
 	if type(result) ~= "table" then
 		return {}
 	end
+
 	for _, value in pairs(result) do
 		local range = value.position
 		local line = value.position.line
 		local label = value.label
+
+		local label_str = ""
+
+		if type(label) == "string" then
+			label_str = value.label
+		elseif type(label) == "table" then
+			for _, label_part in ipairs(label) do
+				label_str = label_part.value
+			end
+		end
+
 		local kind = value.kind
 
 		local function add_line()
 			if map[line] ~= nil then
-				table.insert(map[line], { label = label, kind = kind, range = range })
+				table.insert(map[line], { label = label_str, kind = kind, range = range })
 			else
-				map[line] = { { label = label, kind = kind, range = range } }
+				map[line] = { { label = label_str, kind = kind, range = range } }
 			end
 		end
 
 		add_line()
 	end
+
 	return map
 end
 
