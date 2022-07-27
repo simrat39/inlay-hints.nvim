@@ -184,20 +184,16 @@ function M.render(self, bufnr)
 
 		-- show parameter hints inside brackets with commas and a thin arrow
 		if not vim.tbl_isempty(param_hints) and opts.show_parameter_hints then
-			virt_text = virt_text .. opts.parameter_hints_prefix .. "("
 			for i, hint in ipairs(param_hints) do
 				virt_text = virt_text .. hint.label
 				if i ~= #param_hints then
 					virt_text = virt_text .. ", "
 				end
 			end
-			virt_text = virt_text .. ") "
 		end
 
 		-- show other hints with commas and a thicc arrow
 		if not vim.tbl_isempty(type_hints) then
-			virt_text = virt_text .. opts.other_hints_prefix
-
 			for i, hint in ipairs(type_hints) do
 				if opts.show_variable_name then
 					local char_start = hint.range.start.character
@@ -213,7 +209,7 @@ function M.render(self, bufnr)
 					virt_text = virt_text .. ", "
 				end
 			end
-        end
+		end
 
 		if virt_text ~= "" then
 			vim.api.nvim_buf_set_extmark(buffer, M.namespace, line, 0, {
