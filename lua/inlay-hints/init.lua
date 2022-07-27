@@ -5,12 +5,16 @@ local M = {
 	unset = nil,
 	cache = nil,
 	config = nil,
+    kind = nil,
 }
 
 function M.setup(opts)
 	local config = require("inlay-hints.config")
 	M.config = config
 	config.setup(opts)
+
+    local kind = require("inlay-hints.kind")
+    M.kind = kind
 
 	local inlay = require("inlay-hints.hints")
 	local hints = inlay.new()

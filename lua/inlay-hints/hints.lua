@@ -1,4 +1,5 @@
 local ih = require("inlay-hints")
+local InlayHintKind = ih.kind
 
 local M = {}
 
