@@ -96,6 +96,7 @@ end
 -- }
 --
 local function parse_hints(result)
+	P(result)
 	local map = {}
 
 	if type(result) ~= "table" then
@@ -113,7 +114,7 @@ local function parse_hints(result)
 			label_str = value.label
 		elseif type(label) == "table" then
 			for _, label_part in ipairs(label) do
-				label_str = label_part.value
+				label_str = label_str .. label_part.value
 			end
 		end
 
@@ -125,6 +126,8 @@ local function parse_hints(result)
 			map[line] = { { label = label_str, kind = kind, range = range } }
 		end
 	end
+
+	P(map)
 
 	return map
 end
@@ -146,7 +149,7 @@ function M.cache_render(self, bufnr)
 end
 
 function M.render(self, bufnr)
-	local opts = ih.config.options
+	local opts = ih.config.options or {}
 	local buffer = bufnr or vim.api.nvim_get_current_buf()
 
 	local hints = self.cache[buffer]
@@ -175,7 +178,7 @@ function M.render(self, bufnr)
 			if hint.kind == InlayHintKind.Type then
 				table.insert(type_hints, hint)
 			elseif hint.kind == InlayHintKind.Parameter then
-				table.insert(param_hints, hint.label)
+				table.insert(param_hints, hint)
 			end
 		end
 
@@ -183,7 +186,7 @@ function M.render(self, bufnr)
 		if not vim.tbl_isempty(param_hints) and opts.show_parameter_hints then
 			virt_text = virt_text .. opts.parameter_hints_prefix .. "("
 			for i, hint in ipairs(param_hints) do
-				virt_text = virt_text .. hint:sub(1, -2)
+				virt_text = virt_text .. hint.label
 				if i ~= #param_hints then
 					virt_text = virt_text .. ", "
 				end
@@ -194,6 +197,7 @@ function M.render(self, bufnr)
 		-- show other hints with commas and a thicc arrow
 		if not vim.tbl_isempty(type_hints) then
 			virt_text = virt_text .. opts.other_hints_prefix
+
 			for i, hint in ipairs(type_hints) do
 				if opts.show_variable_name then
 					local char_start = hint.range.start.character
@@ -202,30 +206,26 @@ function M.render(self, bufnr)
 
 					virt_text = virt_text .. variable_name .. ": " .. hint.label
 				else
-					if string.sub(hint.label, 1, 2) == ": " then
-						virt_text = virt_text .. hint.label:sub(3)
-					else
-						virt_text = virt_text .. hint.label
-					end
+					virt_text = virt_text .. hint.label
 				end
+
 				if i ~= #type_hints then
 					virt_text = virt_text .. ", "
 				end
 			end
+        end
 
-			-- set the virtual text if it is not empty
-			if virt_text ~= "" then
-				vim.api.nvim_buf_set_extmark(buffer, M.namespace, line, 0, {
-					virt_text_pos = opts.right_align and "right_align" or "eol",
-					virt_text = {
-						{ virt_text, opts.highlight },
-					},
-					hl_mode = "combine",
-				})
-			end
+		if virt_text ~= "" then
+			vim.api.nvim_buf_set_extmark(buffer, M.namespace, line, 0, {
+				virt_text_pos = opts.right_align and "right_align" or "eol",
+				virt_text = {
+					{ virt_text, opts.highlight },
+				},
+				hl_mode = "combine",
+			})
 		end
-		::continue::
 	end
+	::continue::
 end
 
 return M
