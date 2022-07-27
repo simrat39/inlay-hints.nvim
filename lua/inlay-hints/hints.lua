@@ -119,15 +119,11 @@ local function parse_hints(result)
 
 		local kind = value.kind
 
-		local function add_line()
-			if map[line] ~= nil then
-				table.insert(map[line], { label = label_str, kind = kind, range = range })
-			else
-				map[line] = { { label = label_str, kind = kind, range = range } }
-			end
+		if map[line] ~= nil then
+			table.insert(map[line], { label = label_str, kind = kind, range = range })
+		else
+			map[line] = { { label = label_str, kind = kind, range = range } }
 		end
-
-		add_line()
 	end
 
 	return map
@@ -161,9 +157,8 @@ function M.render(self, bufnr)
 
 	clear_ns(buffer)
 
-	for key, value in pairs(hints) do
+	for line, line_hints in pairs(hints) do
 		local virt_text = ""
-		local line = tonumber(key)
 
 		if opts.only_current_line then
 			local curr_line_nr = vim.api.nvim_win_get_cursor(0)[1] - 1
@@ -172,52 +167,51 @@ function M.render(self, bufnr)
 			end
 		end
 
-			local param_hints = {}
-			local other_hints = {}
+		local type_hints = {}
+		local param_hints = {}
 
-			-- segregate paramter hints and other hints
-			for _, value_inner in ipairs(value) do
-				if value_inner.kind == 2 then
-					table.insert(param_hints, value_inner.label)
-				end
+		-- segregate paramter hints and other hints
+		for _, hint in ipairs(line_hints) do
+			if hint.kind == InlayHintKind.Type then
+				table.insert(type_hints, hint)
+			elseif hint.kind == InlayHintKind.Parameter then
+				table.insert(param_hints, hint.label)
+			end
+		end
 
-				if value_inner.kind == 1 then
-					table.insert(other_hints, value_inner)
+		-- show parameter hints inside brackets with commas and a thin arrow
+		if not vim.tbl_isempty(param_hints) and opts.show_parameter_hints then
+			virt_text = virt_text .. opts.parameter_hints_prefix .. "("
+			for i, hint in ipairs(param_hints) do
+				virt_text = virt_text .. hint:sub(1, -2)
+				if i ~= #param_hints then
+					virt_text = virt_text .. ", "
 				end
 			end
+			virt_text = virt_text .. ") "
+		end
 
-			-- show parameter hints inside brackets with commas and a thin arrow
-			if not vim.tbl_isempty(param_hints) and opts.show_parameter_hints then
-				virt_text = virt_text .. opts.parameter_hints_prefix .. "("
-				for i, value_inner_inner in ipairs(param_hints) do
-					virt_text = virt_text .. value_inner_inner:sub(1, -2)
-					if i ~= #param_hints then
-						virt_text = virt_text .. ", "
-					end
-				end
-				virt_text = virt_text .. ") "
-			end
+		-- show other hints with commas and a thicc arrow
+		if not vim.tbl_isempty(type_hints) then
+			virt_text = virt_text .. opts.other_hints_prefix
+			for i, hint in ipairs(type_hints) do
+				if opts.show_variable_name then
+					local char_start = hint.range.start.character
+					local char_end = hint.range["end"].character
+					local variable_name = string.sub(current_line, char_start + 1, char_end)
 
-			-- show other hints with commas and a thicc arrow
-			if not vim.tbl_isempty(other_hints) then
-				virt_text = virt_text .. opts.other_hints_prefix
-				for i, value_inner_inner in ipairs(other_hints) do
-					if value_inner_inner.kind == 2 and opts.show_variable_name then
-						local char_start = value_inner_inner.range.start.character
-						local char_end = value_inner_inner.range["end"].character
-						local variable_name = string.sub(current_line, char_start + 1, char_end)
-						virt_text = virt_text .. variable_name .. ": " .. value_inner_inner.label
+					virt_text = virt_text .. variable_name .. ": " .. hint.label
+				else
+					if string.sub(hint.label, 1, 2) == ": " then
+						virt_text = virt_text .. hint.label:sub(3)
 					else
-						if string.sub(value_inner_inner.label, 1, 2) == ": " then
-							virt_text = virt_text .. value_inner_inner.label:sub(3)
-						else
-							virt_text = virt_text .. value_inner_inner.label
-						end
-					end
-					if i ~= #other_hints then
-						virt_text = virt_text .. ", "
+						virt_text = virt_text .. hint.label
 					end
 				end
+				if i ~= #type_hints then
+					virt_text = virt_text .. ", "
+				end
+			end
 
 			-- set the virtual text if it is not empty
 			if virt_text ~= "" then
