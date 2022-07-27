@@ -172,9 +172,6 @@ function M.render(self, bufnr)
 			end
 		end
 
-		local current_line = vim.api.nvim_buf_get_lines(buffer, line, line + 1, false)[1]
-
-		if current_line then
 			local param_hints = {}
 			local other_hints = {}
 
@@ -221,7 +218,6 @@ function M.render(self, bufnr)
 						virt_text = virt_text .. ", "
 					end
 				end
-			end
 
 			-- set the virtual text if it is not empty
 			if virt_text ~= "" then
