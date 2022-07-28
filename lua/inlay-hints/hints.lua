@@ -1,5 +1,4 @@
 local ih = require("inlay-hints")
-local InlayHintKind = ih.kind
 
 local M = {}
 
@@ -96,7 +95,6 @@ end
 -- }
 --
 local function parse_hints(result)
-	P(result)
 	local map = {}
 
 	if type(result) ~= "table" then
@@ -127,8 +125,6 @@ local function parse_hints(result)
 		end
 	end
 
-	P(map)
-
 	return map
 end
 
@@ -149,7 +145,6 @@ function M.cache_render(self, bufnr)
 end
 
 function M.render(self, bufnr)
-	local opts = ih.config.options or {}
 	local buffer = bufnr or vim.api.nvim_get_current_buf()
 
 	local hints = self.cache[buffer]
@@ -158,70 +153,7 @@ function M.render(self, bufnr)
 		return
 	end
 
-	clear_ns(buffer)
-
-	for line, line_hints in pairs(hints) do
-		local virt_text = ""
-
-		if opts.only_current_line then
-			local curr_line_nr = vim.api.nvim_win_get_cursor(0)[1] - 1
-			if line ~= curr_line_nr then
-				goto continue
-			end
-		end
-
-		local type_hints = {}
-		local param_hints = {}
-
-		-- segregate paramter hints and other hints
-		for _, hint in ipairs(line_hints) do
-			if hint.kind == InlayHintKind.Type then
-				table.insert(type_hints, hint)
-			elseif hint.kind == InlayHintKind.Parameter then
-				table.insert(param_hints, hint)
-			end
-		end
-
-		-- show parameter hints inside brackets with commas and a thin arrow
-		if not vim.tbl_isempty(param_hints) and opts.show_parameter_hints then
-			for i, hint in ipairs(param_hints) do
-				virt_text = virt_text .. hint.label
-				if i ~= #param_hints then
-					virt_text = virt_text .. ", "
-				end
-			end
-		end
-
-		-- show other hints with commas and a thicc arrow
-		if not vim.tbl_isempty(type_hints) then
-			for i, hint in ipairs(type_hints) do
-				if opts.show_variable_name then
-					local char_start = hint.range.start.character
-					local char_end = hint.range["end"].character
-					local variable_name = string.sub(current_line, char_start + 1, char_end)
-
-					virt_text = virt_text .. variable_name .. ": " .. hint.label
-				else
-					virt_text = virt_text .. hint.label
-				end
-
-				if i ~= #type_hints then
-					virt_text = virt_text .. ", "
-				end
-			end
-		end
-
-		if virt_text ~= "" then
-			vim.api.nvim_buf_set_extmark(buffer, M.namespace, line, 0, {
-				virt_text_pos = opts.right_align and "right_align" or "eol",
-				virt_text = {
-					{ virt_text, opts.highlight },
-				},
-				hl_mode = "combine",
-			})
-		end
-	end
-	::continue::
+	ih.renderer.render(buffer, M.namespace, hints)
 end
 
 return M
