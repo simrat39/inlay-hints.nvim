@@ -4,7 +4,7 @@ local M = {}
 
 function M.new()
   M.namespace = vim.api.nvim_create_namespace("textDocument/inlayHints")
-  local self = setmetatable({ cache = {}, enabled = false }, { __index = M })
+  local self = setmetatable({ cache = {} }, { __index = M })
 
   return self
 end
@@ -16,7 +16,6 @@ end
 
 -- Disable hints and clear all cached buffers
 function M.disable(self)
-  self.disable = false
   M.disable_cache_autocmd()
 
   for k, _ in pairs(self.cache) do
@@ -34,7 +33,6 @@ end
 
 -- Enable auto hints and set hints for the current buffer
 function M.enable(self)
-  self.enabled = true
   M.enable_cache_autocmd()
   set_all(self)
 end
