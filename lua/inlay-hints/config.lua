@@ -6,7 +6,7 @@ local defaults = {
   auto = true,
 
   -- renderer to use
-  renderer = "inlay-hints/render/eol",
+  renderer = "inlay-hints/render/dynamic",
 
   -- Only show inlay hints for the current line
   only_current_line = false,
