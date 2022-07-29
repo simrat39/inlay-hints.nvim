@@ -60,10 +60,19 @@ function M.render_line(line, line_hints, bufnr, ns)
 end
 
 function M.render(bufnr, ns, hints)
-  clear_ns(ns, bufnr)
+  local opts = ih.config.options or {}
 
-  for line, line_hints in pairs(hints) do
-    M.render_line(line, line_hints, bufnr, ns)
+  clear_ns(ns, bufnr)
+  if opts.only_current_line then
+    local curr_line = vim.api.nvim_win_get_cursor(0)[1] - 1
+    local line_hints = hints[curr_line]
+    if line_hints then
+      M.render_line(curr_line, line_hints, bufnr, ns)
+    end
+  else
+    for line, line_hints in pairs(hints) do
+      M.render_line(line, line_hints, bufnr, ns)
+    end
   end
 end
 

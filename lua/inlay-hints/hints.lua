@@ -31,6 +31,8 @@ function M.unset()
 end
 
 function M.on_attach(_, bufnr)
+  local opts = ih.config.options or {}
+
   vim.api.nvim_create_autocmd({
     "BufWritePost",
     "BufReadPost",
@@ -43,6 +45,17 @@ function M.on_attach(_, bufnr)
       ih.cache()
     end,
   })
+
+  if ih.config.options.only_current_line then
+    vim.api.nvim_create_autocmd("CursorHold", {
+    buffer = bufnr,
+    callback = function()
+      ih.render()
+    end,
+    }) 
+  end
+
+  
   ih.cache()
 end
 

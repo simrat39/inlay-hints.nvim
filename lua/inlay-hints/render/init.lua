@@ -10,7 +10,7 @@ local function get_renderer()
 end
 
 function M.render(bufnr, ns, hints)
-    local renderer = get_renderer()
+  local renderer = get_renderer()
   renderer.render(bufnr, ns, hints)
 end
 
