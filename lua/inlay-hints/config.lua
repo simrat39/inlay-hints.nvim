@@ -16,7 +16,7 @@ local defaults = {
   },
 
   -- Only show inlay hints for the current line
-  only_current_line = true,
+  only_current_line = false,
 
   eol = {
     -- whether to align to the extreme right or not
