@@ -9,9 +9,13 @@ local function clear_ns(ns, bufnr)
 end
 
 function M.render_line(line, line_hints, bufnr, ns)
-  local opts = ih.config.options.eol or {}
+  local opts = ih.config.options or {}
 
-  local virt_text = ""
+  local eol_opts = opts.eol
+  local parameter_opts = opts.hints.parameter
+  local type_opts = opts.hints.type
+
+  local virt_text = {}
 
   local type_hints = {}
   local param_hints = {}
@@ -26,35 +30,33 @@ function M.render_line(line, line_hints, bufnr, ns)
   end
 
   -- show parameter hints inside brackets with commas and a thin arrow
-  if not vim.tbl_isempty(param_hints) and opts.show_parameter_hints then
+  if not vim.tbl_isempty(param_hints) and parameter_opts.show then
     for i, hint in ipairs(param_hints) do
-      virt_text = virt_text .. hint.label
+      local text = hint.label
       if i ~= #param_hints then
-        virt_text = virt_text .. ", "
+        text = text .. ", "
       end
+      table.insert(virt_text, { text, parameter_opts.highlight })
     end
   end
 
   -- show other hints with commas and a thicc arrow
   if not vim.tbl_isempty(type_hints) then
     for i, hint in ipairs(type_hints) do
-        virt_text = virt_text .. hint.label
+      local text = hint.label
 
       if i ~= #type_hints then
-        virt_text = virt_text .. ", "
+        text = text .. ", "
       end
+      table.insert(virt_text, { text, type_opts.highlight })
     end
   end
 
-  if virt_text ~= "" then
-    vim.api.nvim_buf_set_extmark(bufnr, ns, line, 0, {
-      virt_text_pos = opts.right_align and "right_align" or "eol",
-      virt_text = {
-        { virt_text, opts.highlight },
-      },
-      hl_mode = "combine",
-    })
-  end
+  vim.api.nvim_buf_set_extmark(bufnr, ns, line, 0, {
+    virt_text_pos = eol_opts.right_align and "right_align" or "eol",
+    virt_text = virt_text,
+    hl_mode = "combine",
+  })
 end
 
 function M.render(bufnr, ns, hints)
