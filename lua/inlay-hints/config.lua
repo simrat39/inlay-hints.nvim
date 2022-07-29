@@ -15,23 +15,10 @@ local defaults = {
     },
   },
 
-    -- Only show inlay hints for the current line
-    only_current_line = true,
+  -- Only show inlay hints for the current line
+  only_current_line = true,
 
   eol = {
-
-    -- whether to show parameter hints with the inlay hints or not
-    -- default: true
-    show_parameter_hints = true,
-
-    -- prefix for parameter hints
-    -- default: "<-"
-    parameter_hints_prefix = "<- ",
-
-    -- prefix for all the other hints (type, chaining)
-    -- default: "=>"
-    other_hints_prefix = "=> ",
-
     -- whether to align to the lenght of the longest line in the file
     max_len_align = false,
 
