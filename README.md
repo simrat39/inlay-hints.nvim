@@ -26,7 +26,7 @@ require("inlay-hints").setup()
 
 ## Usage
 
-The plugin hooks itself to the on_attach callback of a LSP Server.
+The plugin hooks itself to the on_attach callback of an LSP Server.
 
 ```lua
 local ih = require("inlay-hints")
