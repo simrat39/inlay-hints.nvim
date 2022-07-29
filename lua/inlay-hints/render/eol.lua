@@ -38,15 +38,7 @@ function M.render_line(line, line_hints, bufnr, ns)
   -- show other hints with commas and a thicc arrow
   if not vim.tbl_isempty(type_hints) then
     for i, hint in ipairs(type_hints) do
-      if opts.show_variable_name then
-        local char_start = hint.range.start.character
-        local char_end = hint.range["end"].character
-        local variable_name = string.sub(current_line, char_start + 1, char_end)
-
-        virt_text = virt_text .. variable_name .. ": " .. hint.label
-      else
         virt_text = virt_text .. hint.label
-      end
 
       if i ~= #type_hints then
         virt_text = virt_text .. ", "
