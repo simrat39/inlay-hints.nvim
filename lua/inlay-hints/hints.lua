@@ -96,6 +96,10 @@ local function parse_hints(result)
     else
       map[line] = { { label = label_str, kind = kind, range = range } }
     end
+
+    table.sort(map[line], function(a, b)
+      return a.range.character < b.range.character
+    end)
   end
 
   return map
