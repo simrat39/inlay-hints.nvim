@@ -26,8 +26,9 @@ require("inlay-hints").setup()
 
 ## Usage
 
-The plugin hooks itself to the on_attach callback of an LSP Server.
+The plugin hooks itself to the on_attach callback of an LSP Server. Some servers might need extra configuration to enable inlay hints. See the examples below to get started.
 
+### w/ sumneko_lua
 ```lua
 local ih = require("inlay-hints")
 local lspconfig = require("lspconfig")
@@ -63,6 +64,42 @@ require("rust-tools").setup({
     on_attach = function(c, b)
       ih.on_attach(c, b)
     end,
+  },
+})
+```
+
+### w/ tsserver
+```lua
+local ih = require("inlay-hints")
+local lspconfig = require("lspconfig")
+
+lspconfig.tsserver.setup({
+  on_attach = function(c, b)
+    ih.on_attach(c, b)
+  end,
+  settings = {
+    javascript = {
+      inlayHints = {
+        includeInlayEnumMemberValueHints = true,
+        includeInlayFunctionLikeReturnTypeHints = true,
+        includeInlayFunctionParameterTypeHints = true,
+        includeInlayParameterNameHints = "all", -- 'none' | 'literals' | 'all';
+        includeInlayParameterNameHintsWhenArgumentMatchesName = true,
+        includeInlayPropertyDeclarationTypeHints = true,
+        includeInlayVariableTypeHints = true,
+      },
+    },
+    typescript = {
+      inlayHints = {
+        includeInlayEnumMemberValueHints = true,
+        includeInlayFunctionLikeReturnTypeHints = true,
+        includeInlayFunctionParameterTypeHints = true,
+        includeInlayParameterNameHints = "all", -- 'none' | 'literals' | 'all';
+        includeInlayParameterNameHintsWhenArgumentMatchesName = true,
+        includeInlayPropertyDeclarationTypeHints = true,
+        includeInlayVariableTypeHints = true,
+      },
+    },
   },
 })
 ```
