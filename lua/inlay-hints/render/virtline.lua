@@ -1,5 +1,4 @@
 local ih = require("inlay-hints")
-local InlayHintKind = ih.kind
 
 local M = {}
 
@@ -8,12 +7,9 @@ local function clear_ns(ns, bufnr)
   vim.api.nvim_buf_clear_namespace(bufnr, ns, 0, -1)
 end
 
-function M.render(bufnr, ns, hints)
+function M.render_line(line, line_hints, bufnr, ns)
   local opts = ih.config.options or {}
-
-  clear_ns(ns, bufnr)
-
-  for line, line_hints in pairs(hints) do
+    
     local virt_text = ""
 
     for _, hint in ipairs(line_hints) do
@@ -32,6 +28,14 @@ function M.render(bufnr, ns, hints)
         },
       })
     end
+end
+
+function M.render(bufnr, ns, hints)
+
+  clear_ns(ns, bufnr)
+
+  for line, line_hints in pairs(hints) do
+      M.render_line(line, line_hints, bufnr, ns)
   end
 end
 
