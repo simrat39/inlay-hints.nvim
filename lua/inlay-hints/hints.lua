@@ -108,21 +108,16 @@ end
 function M.cache_render(self, bufnr)
   local buffer = bufnr or vim.api.nvim_get_current_buf()
 
-  for _, v in ipairs(vim.lsp.buf_get_clients(buffer)) do
-    v.request(
-      "textDocument/inlayHint",
-      get_params(buffer),
-      function(err, result, ctx)
-        if err then
-          return
-        end
+  for _, client in ipairs(vim.lsp.buf_get_clients(buffer)) do
+    ih.adapter.adapt_request(client, buffer, function(err, result, ctx)
+      if err then
+        return
+      end
 
-        self.cache[ctx.bufnr] = parse_hints(result)
+      self.cache[ctx.bufnr] = parse_hints(result)
 
-        M.render(self, ctx.bufnr)
-      end,
-      buffer
-    )
+      M.render(self, ctx.bufnr)
+    end)
   end
 end
 

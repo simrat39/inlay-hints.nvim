@@ -1,4 +1,5 @@
 local M = {
+  adapter = nil,
   set = nil,
   set_all = nil,
   unset = nil,
@@ -13,6 +14,9 @@ function M.setup(opts)
   local config = require("inlay-hints.config")
   M.config = config
   config.setup(opts)
+
+  local adapter = require("inlay-hints.adapter")
+  M.adapter = adapter
 
   local kind = require("inlay-hints.kind")
   M.kind = kind
