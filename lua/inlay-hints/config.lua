@@ -4,6 +4,7 @@ local defaults = {
   -- renderer to use
   renderer = "inlay-hints/render/dynamic",
 
+  eol = {
   -- Only show inlay hints for the current line
   only_current_line = false,
 
@@ -44,6 +45,9 @@ local defaults = {
 
   -- The color of the hints
   highlight = "Comment",
+
+  },
+
 }
 
 M.options = {}

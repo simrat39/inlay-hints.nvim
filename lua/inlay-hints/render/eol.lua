@@ -9,7 +9,7 @@ local function clear_ns(ns, bufnr)
 end
 
 function M.render_line(line, line_hints, bufnr, ns)
-  local opts = ih.config.options or {}
+  local opts = ih.config.options.eol or {}
 
   local virt_text = ""
 
