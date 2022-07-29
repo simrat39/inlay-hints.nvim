@@ -31,25 +31,29 @@ function M.render_line(line, line_hints, bufnr, ns)
 
   -- show parameter hints inside brackets with commas and a thin arrow
   if not vim.tbl_isempty(param_hints) and parameter_opts.show then
+    local text = ""
     for i, hint in ipairs(param_hints) do
-      local text = hint.label
+      text = text .. hint.label
       if i ~= #param_hints then
-        text = text .. ", "
+        text = text .. eol_opts.parameter.separator
       end
-      table.insert(virt_text, { text, parameter_opts.highlight })
     end
+    text = eol_opts.parameter.format(text)
+    table.insert(virt_text, { text, parameter_opts.highlight })
   end
 
   -- show other hints with commas and a thicc arrow
   if not vim.tbl_isempty(type_hints) then
+    local text = ""
     for i, hint in ipairs(type_hints) do
-      local text = hint.label
+      text = text .. hint.label
 
       if i ~= #type_hints then
-        text = text .. ", "
+        text = text .. eol_opts.type.separator
       end
-      table.insert(virt_text, { text, type_opts.highlight })
     end
+    text = eol_opts.type.format(text)
+    table.insert(virt_text, { text, type_opts.highlight })
   end
 
   vim.api.nvim_buf_set_extmark(bufnr, ns, line, 0, {
