@@ -2,6 +2,7 @@ local M = {}
 
 local defaults = {
   -- renderer to use
+  -- possible options are dynamic, eol and virtline
   renderer = "inlay-hints/render/dynamic",
 
   hints = {

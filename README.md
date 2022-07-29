@@ -24,6 +24,22 @@ Put this in your init.lua or any lua file that is sourced.<br>
 require("inlay-hints").setup()
 ```
 
+## Config
+
+Pass a table to the setup call above with your configuration options.
+
+For example:
+```lua
+require("inlay-hints").setup({
+  only_current_line = true,
+
+  eol = {
+    right_align = true,
+  }
+})
+```
+Take a look at all the possible configuration options [here](https://github.com/simrat39/inlay-hints.nvim/blob/main/lua/inlay-hints/config.lua#L3)
+
 ## Usage
 
 The plugin hooks itself to the on_attach callback of an LSP Server. Some servers might need extra configuration to enable inlay hints. See the examples below to get started.
