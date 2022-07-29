@@ -14,27 +14,10 @@ local function clear_ns(bufnr)
   vim.api.nvim_buf_clear_namespace(bufnr, M.namespace, 0, -1)
 end
 
--- Disable hints and clear all cached buffers
-function M.disable(self)
-  M.disable_cache_autocmd()
-
-  for k, _ in pairs(self.cache) do
-    if vim.api.nvim_buf_is_valid(k) then
-      clear_ns(k)
-    end
-  end
-end
-
 local function set_all(self)
   for _, bufnr in ipairs(vim.api.nvim_list_bufs()) do
     M.cache_render(self, bufnr)
   end
-end
-
--- Enable auto hints and set hints for the current buffer
-function M.enable(self)
-  M.enable_cache_autocmd()
-  set_all(self)
 end
 
 -- Set inlay hints only for the current buffer
@@ -47,30 +30,20 @@ function M.unset()
   clear_ns()
 end
 
-function M.enable_cache_autocmd()
-  local opts = ih.config.options
-  vim.cmd(string.format(
-    [[
-        augroup InlayHintsCache
-        autocmd BufWritePost,BufReadPost,BufEnter,BufWinEnter,TabEnter * :lua require"inlay-hints".cache()
-        %s
-        augroup END
-    ]],
-    opts.only_current_line
-        and "autocmd CursorMoved * :lua require'inlay-hints'.render()"
-      or ""
-  ))
-end
-
-function M.disable_cache_autocmd()
-  vim.cmd(
-    [[
-    augroup InlayHintsCache
-    autocmd!
-    augroup END
-  ]],
-    false
-  )
+function M.on_attach(_, bufnr)
+  vim.api.nvim_create_autocmd({
+    "BufWritePost",
+    "BufReadPost",
+    "BufEnter",
+    "BufWinEnter",
+    "TabEnter",
+  }, {
+    buffer = bufnr,
+    callback = function()
+      ih.cache()
+    end,
+  })
+  ih.cache()
 end
 
 local function get_params(bufnr)

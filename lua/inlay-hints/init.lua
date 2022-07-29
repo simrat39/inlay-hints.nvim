@@ -7,6 +7,7 @@ local M = {
   config = nil,
   kind = nil,
   render = nil,
+  on_attach = nil,
 }
 
 function M.setup(opts)
@@ -22,12 +23,6 @@ function M.setup(opts)
 
   local inlay = require("inlay-hints.hints")
   local hints = inlay.new()
-  M.enable = function()
-    inlay.enable(hints)
-  end
-  M.disable = function()
-    inlay.disable(hints)
-  end
   M.set = function()
     inlay.set(hints)
   end
@@ -40,8 +35,9 @@ function M.setup(opts)
   M.render = function()
     inlay.render(hints)
   end
-
-  M.enable()
+  M.on_attach = function(client, bufnr)
+    inlay.on_attach(client, bufnr)
+  end
 end
 
 return M
