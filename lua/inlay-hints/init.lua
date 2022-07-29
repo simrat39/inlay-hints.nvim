@@ -15,11 +15,12 @@ function M.setup(opts)
   M.config = config
   config.setup(opts)
 
+  local kind = require("inlay-hints.kind")
+  M.kind = kind
+
   local adapter = require("inlay-hints.adapter")
   M.adapter = adapter
 
-  local kind = require("inlay-hints.kind")
-  M.kind = kind
 
   local renderer = require("inlay-hints.render")
   M.renderer = renderer
