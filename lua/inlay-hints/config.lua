@@ -4,6 +4,17 @@ local defaults = {
   -- renderer to use
   renderer = "inlay-hints/render/dynamic",
 
+  hints = {
+    parameter = {
+      show = true,
+      highlight = "Comment",
+    },
+    type = {
+      show = true,
+      highlight = "Comment",
+    },
+  },
+
   eol = {
     -- Only show inlay hints for the current line
     only_current_line = false,
@@ -38,9 +49,6 @@ local defaults = {
 
     -- padding from the right if right_align is true
     right_align_padding = 7,
-
-    -- The color of the hints
-    highlight = "Comment",
   },
 }
 
