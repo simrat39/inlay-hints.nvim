@@ -48,6 +48,8 @@ lspconfig.sumneko_lua.setup({
 
 ### w/ rust-tools.nvim
 ```lua
+local ih = require("inlay-hints")
+
 require("rust-tools").setup({
   tools = {
     on_initialized = function()
