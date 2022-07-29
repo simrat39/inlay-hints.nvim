@@ -21,7 +21,6 @@ function M.setup(opts)
   local adapter = require("inlay-hints.adapter")
   M.adapter = adapter
 
-
   local renderer = require("inlay-hints.render")
   M.renderer = renderer
 
