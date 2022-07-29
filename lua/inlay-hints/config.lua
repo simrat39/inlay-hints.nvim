@@ -1,10 +1,6 @@
 local M = {}
 
 local defaults = {
-  -- automatically set inlay hints (type hints)
-  -- default: true
-  auto = true,
-
   -- renderer to use
   renderer = "inlay-hints/render/dynamic",
 
