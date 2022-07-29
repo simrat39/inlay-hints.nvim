@@ -46,13 +46,6 @@ function M.on_attach(_, bufnr)
   ih.cache()
 end
 
-local function get_params(bufnr)
-  local params = vim.lsp.util.make_given_range_params()
-  params["range"]["start"]["line"] = 0
-  params["range"]["end"]["line"] = vim.api.nvim_buf_line_count(bufnr) - 1
-
-  return params
-end
 
 -- parses the result into a easily parsable format
 -- example:
