@@ -1,7 +1,6 @@
 local M = {
-  enable = nil,
-  disable = nil,
   set = nil,
+  set_all = nil,
   unset = nil,
   cache = nil,
   config = nil,
@@ -24,6 +23,9 @@ function M.setup(opts)
   local inlay = require("inlay-hints.hints")
   local hints = inlay.new()
   M.set = function()
+    inlay.set(hints)
+  end
+  M.set_all = function()
     inlay.set(hints)
   end
   M.unset = function()

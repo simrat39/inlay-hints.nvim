@@ -14,7 +14,7 @@ local function clear_ns(bufnr)
   vim.api.nvim_buf_clear_namespace(bufnr, M.namespace, 0, -1)
 end
 
-local function set_all(self)
+function M.set_all(self)
   for _, bufnr in ipairs(vim.api.nvim_list_bufs()) do
     M.cache_render(self, bufnr)
   end
