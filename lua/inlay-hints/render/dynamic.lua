@@ -10,11 +10,11 @@ local function clear_ns(ns, bufnr)
 end
 
 function M.render_line(line, line_hints, bufnr, ns)
-      if #line_hints > 1 then
-        virtline.render_line(line, line_hints, bufnr, ns)
-      else
-        eol.render_line(line, line_hints, bufnr, ns)
-      end
+  if #line_hints > 1 then
+    virtline.render_line(line, line_hints, bufnr, ns)
+  else
+    eol.render_line(line, line_hints, bufnr, ns)
+  end
 end
 
 function M.render(bufnr, ns, hints)
