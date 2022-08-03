@@ -48,6 +48,12 @@ function M.on_attach(_, bufnr)
     end,
   })
 
+  vim.api.nvim_buf_attach(bufnr, false, {
+    on_detach = function()
+      ih.clear_cache(bufnr)
+    end,
+  })
+
   if opts.only_current_line then
     vim.api.nvim_create_autocmd("CursorHold", {
       buffer = bufnr,
@@ -125,6 +131,10 @@ function M.cache_render(self, bufnr)
       M.render(self, ctx.bufnr)
     end)
   end
+end
+
+function M.clear_cache(self, bufnr)
+  self.cache[bufnr] = nil
 end
 
 function M.render(self, bufnr)

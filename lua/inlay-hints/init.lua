@@ -4,6 +4,7 @@ local M = {
   set_all = nil,
   unset = nil,
   cache = nil,
+  clear_cache = nil,
   config = nil,
   kind = nil,
   render = nil,
@@ -37,6 +38,9 @@ function M.setup(opts)
   end
   M.cache = function()
     inlay.cache_render(hints)
+  end
+  M.clear_cache = function(bufnr)
+    inlay.clear_cache(hints, bufnr)
   end
   M.render = function()
     inlay.render(hints)
