@@ -39,6 +39,8 @@ function M.on_attach(_, bufnr)
     "BufEnter",
     "BufWinEnter",
     "TabEnter",
+    "TextChanged",
+    "TextChangedI",
   }, {
     buffer = bufnr,
     callback = function()
@@ -46,19 +48,17 @@ function M.on_attach(_, bufnr)
     end,
   })
 
-  if ih.config.options.only_current_line then
+  if opts.only_current_line then
     vim.api.nvim_create_autocmd("CursorHold", {
-    buffer = bufnr,
-    callback = function()
-      ih.render()
-    end,
-    }) 
+      buffer = bufnr,
+      callback = function()
+        ih.render()
+      end,
+    })
   end
 
-  
   ih.cache()
 end
-
 
 -- parses the result into a easily parsable format
 -- example:
