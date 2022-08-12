@@ -62,7 +62,6 @@ function M.render_line(line, line_hints, bufnr, ns)
   local old = line_hints.old
   if old and old.virt_text then
     if old.virt_lines then
-      print("here")
       goto skip
     end
 
