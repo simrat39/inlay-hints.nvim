@@ -31,13 +31,18 @@ function M.render_line(line, line_hints, bufnr, ns)
   local last_virt_text = ""
   local old = line_hints.old
   if old and old.virt_lines then
+    if old.virt_lines then
+      goto skip
+    end
     local last = old.virt_lines[1]
 
     for _, value in ipairs(last) do
       last_virt_text = last_virt_text .. value[1]
     end
+    ::skip::
   end
 
+  -- Should clear if old had virt_text
   if virt_text == last_virt_text then
     return
   end

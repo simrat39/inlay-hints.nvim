@@ -61,17 +61,25 @@ function M.render_line(line, line_hints, bufnr, ns)
   local last_virt_text = ""
   local old = line_hints.old
   if old and old.virt_text then
+    if old.virt_lines then
+      print("here")
+      goto skip
+    end
+
     local last = old.virt_text
 
     for _, value in ipairs(last) do
       last_virt_text = last_virt_text .. value[1]
     end
+
+    ::skip::
   end
 
   if virt_text_str == last_virt_text then
     return
   end
 
+  ui_utils.clear_ns(bufnr, ns, line, line + 1)
   vim.api.nvim_buf_set_extmark(bufnr, ns, line, 0, {
     virt_text_pos = eol_opts.right_align and "right_align" or "eol",
     virt_text = virt_text,
