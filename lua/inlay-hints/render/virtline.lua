@@ -59,9 +59,9 @@ function M.render(bufnr, ns, hints)
   local opts = ih.config.options or {}
 
   if opts.only_current_line then
-    ui_utils.clear_ns(bufnr, ns)
     local curr_line = vim.api.nvim_win_get_cursor(0)[1] - 1
     local line_hints = hints[curr_line]
+      ui_utils.clear_ns_except(bufnr, ns, { curr_line })
     if line_hints then
       M.render_line(curr_line, line_hints, bufnr, ns)
     end
