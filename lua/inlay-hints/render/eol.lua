@@ -1,12 +1,8 @@
 local ih = require("inlay-hints")
+local ui_utils = require("inlay-hints.utils.ui")
 local InlayHintKind = ih.kind
 
 local M = {}
-
-local function clear_ns(ns, bufnr)
-  -- clear namespace which clears the virtual text as well
-  vim.api.nvim_buf_clear_namespace(bufnr, ns, 0, -1)
-end
 
 function M.render_line(line, line_hints, bufnr, ns)
   local opts = ih.config.options or {}
@@ -16,6 +12,7 @@ function M.render_line(line, line_hints, bufnr, ns)
   local type_opts = opts.hints.type
 
   local virt_text = {}
+  local virt_text_str = ""
 
   local type_hints = {}
   local param_hints = {}
@@ -39,6 +36,8 @@ function M.render_line(line, line_hints, bufnr, ns)
       end
     end
     text = eol_opts.parameter.format(text)
+
+    virt_text_str = virt_text_str .. text
     table.insert(virt_text, { text, parameter_opts.highlight })
   end
 
@@ -53,7 +52,23 @@ function M.render_line(line, line_hints, bufnr, ns)
       end
     end
     text = eol_opts.type.format(text)
+
+    virt_text_str = virt_text_str .. text
     table.insert(virt_text, { text, type_opts.highlight })
+  end
+
+  local last_virt_text = ""
+  local old = line_hints.old
+  if old and old.virt_text then
+    local last = old.virt_lines[1]
+
+    for _, value in ipairs(last) do
+      last_virt_text = last_virt_text .. value[1]
+    end
+  end
+
+  if virt_text_str == last_virt_text then
+    return
   end
 
   vim.api.nvim_buf_set_extmark(bufnr, ns, line, 0, {
@@ -66,14 +81,29 @@ end
 function M.render(bufnr, ns, hints)
   local opts = ih.config.options or {}
 
-  clear_ns(ns, bufnr)
   if opts.only_current_line then
+    ui_utils.clear_ns(bufnr, ns)
     local curr_line = vim.api.nvim_win_get_cursor(0)[1] - 1
     local line_hints = hints[curr_line]
     if line_hints then
       M.render_line(curr_line, line_hints, bufnr, ns)
     end
   else
+    local marks = vim.api.nvim_buf_get_extmarks(
+      bufnr,
+      ns,
+      0,
+      -1,
+      { details = true }
+    )
+
+    for _, mark in ipairs(marks) do
+      local mark_line = mark[2]
+      if hints[mark_line] then
+        hints[mark_line].old = mark[4]
+      end
+    end
+
     for line, line_hints in pairs(hints) do
       M.render_line(line, line_hints, bufnr, ns)
     end

@@ -104,9 +104,14 @@ local function parse_hints(result)
     local kind = value.kind
 
     if map[line] ~= nil then
-      table.insert(map[line], { label = label_str, kind = kind, range = range })
+      table.insert(
+        map[line],
+        { label = label_str, kind = kind, range = range }
+      )
     else
-      map[line] = { { label = label_str, kind = kind, range = range } }
+      map[line] = {
+        { label = label_str, kind = kind, range = range },
+      }
     end
 
     table.sort(map[line], function(a, b)
