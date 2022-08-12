@@ -12,7 +12,7 @@ function M.clear_ns_except(bufnr, ns, exceptions)
   local last = 0
   for _, line in ipairs(exceptions) do
     vim.api.nvim_buf_clear_namespace(bufnr, ns, last, line)
-    last = line
+    last = line + 1
   end
 
   local last_exception = exceptions[#exceptions] + 1
