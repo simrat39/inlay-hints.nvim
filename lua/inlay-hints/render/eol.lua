@@ -1,5 +1,6 @@
 local ih = require("inlay-hints")
 local ui_utils = require("inlay-hints.utils.ui")
+local t_utils = require("inlay-hints.utils.table")
 local InlayHintKind = ih.kind
 
 local M = {}
@@ -60,7 +61,7 @@ function M.render_line(line, line_hints, bufnr, ns)
   local last_virt_text = ""
   local old = line_hints.old
   if old and old.virt_text then
-    local last = old.virt_lines[1]
+    local last = old.virt_text
 
     for _, value in ipairs(last) do
       last_virt_text = last_virt_text .. value[1]
@@ -89,6 +90,13 @@ function M.render(bufnr, ns, hints)
       M.render_line(curr_line, line_hints, bufnr, ns)
     end
   else
+    local lines = t_utils.get_keys(hints)
+    table.sort(lines, function(a, b)
+      return a < b
+    end)
+
+    ui_utils.clear_ns_except(bufnr, ns, lines)
+
     local marks = vim.api.nvim_buf_get_extmarks(
       bufnr,
       ns,
