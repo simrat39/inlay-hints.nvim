@@ -2,27 +2,22 @@ local ih = require("inlay-hints")
 
 local M = {}
 
-function M.new()
-  M.namespace = vim.api.nvim_create_namespace("textDocument/inlayHints")
-  local self = setmetatable({ cache = {} }, { __index = M })
-
-  return self
-end
+M.namespace = vim.api.nvim_create_namespace("textDocument/inlayHints")
 
 local function clear_ns(bufnr)
   -- clear namespace which clears the virtual text as well
   vim.api.nvim_buf_clear_namespace(bufnr, M.namespace, 0, -1)
 end
 
-function M.set_all(self)
+function M.set_all()
   for _, bufnr in ipairs(vim.api.nvim_list_bufs()) do
-    M.cache_render(self, bufnr)
+    M.cache_render(bufnr)
   end
 end
 
 -- Set inlay hints only for the current buffer
-function M.set(self)
-  M.cache_render(self, 0)
+function M.set()
+  M.cache_render(0)
 end
 
 -- Clear hints only for the current buffer
@@ -50,7 +45,7 @@ function M.on_attach(_, bufnr)
 
   vim.api.nvim_buf_attach(bufnr, false, {
     on_detach = function()
-      ih.clear_cache(bufnr)
+      ih.hint_cache:del(bufnr)
     end,
   })
 
@@ -66,7 +61,7 @@ function M.on_attach(_, bufnr)
   ih.cache()
 end
 
--- parses the result into a easily parsable format
+-- Parses the result into a easily usable format
 -- example:
 -- {
 --  ["12"] = { {
@@ -104,10 +99,11 @@ local function parse_hints(result)
     local kind = value.kind
 
     if map[line] ~= nil then
-      table.insert(
-        map[line],
-        { label = label_str, kind = kind, range = range }
-      )
+      table.insert(map[line], {
+        label = label_str,
+        kind = kind,
+        range = range,
+      })
     else
       map[line] = {
         { label = label_str, kind = kind, range = range },
@@ -122,7 +118,7 @@ local function parse_hints(result)
   return map
 end
 
-function M.cache_render(self, bufnr)
+function M.cache_render(bufnr)
   local buffer = bufnr or vim.api.nvim_get_current_buf()
 
   for _, client in ipairs(vim.lsp.buf_get_clients(buffer)) do
@@ -131,21 +127,17 @@ function M.cache_render(self, bufnr)
         return
       end
 
-      self.cache[ctx.bufnr] = parse_hints(result)
+      ih.hint_cache:set(ctx.bufnr, parse_hints(result))
 
-      M.render(self, ctx.bufnr)
+      M.render(ctx.bufnr)
     end)
   end
 end
 
-function M.clear_cache(self, bufnr)
-  self.cache[bufnr] = nil
-end
-
-function M.render(self, bufnr)
+function M.render(bufnr)
   local buffer = bufnr or vim.api.nvim_get_current_buf()
 
-  local hints = self.cache[buffer]
+  local hints = ih.hint_cache:get(buffer)
 
   if hints == nil then
     return
