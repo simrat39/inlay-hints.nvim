@@ -1,4 +1,5 @@
 local Cache = require("inlay-hints.cache")
+local BufUtils = require("inlay-hints.utils.buf")
 
 local M = {
   adapter = nil,
@@ -48,6 +49,15 @@ function M.setup(opts)
   end
   M.on_attach = function(client, bufnr)
     inlay.on_attach(client, bufnr)
+  end
+  M.enable = function(bufnr)
+    inlay.enable(BufUtils.parse_buf(bufnr))
+  end
+  M.disable = function(bufnr)
+    inlay.disable(BufUtils.parse_buf(bufnr))
+  end
+  M.toggle = function(bufnr)
+    inlay.toggle(BufUtils.parse_buf(bufnr))
   end
 end
 
