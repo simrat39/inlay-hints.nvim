@@ -83,6 +83,7 @@ function M.render_line(line, line_hints, bufnr, ns)
     virt_text_pos = eol_opts.right_align and "right_align" or "eol",
     virt_text = virt_text,
     hl_mode = "combine",
+    priority = eol_opts.priority,
   })
 end
 
