@@ -26,6 +26,9 @@ local defaults = {
     -- padding from the right if right_align is true
     right_align_padding = 7,
 
+    -- virtual text priority
+    priority = 0,
+
     parameter = {
       separator = ", ",
       format = function(hints)
