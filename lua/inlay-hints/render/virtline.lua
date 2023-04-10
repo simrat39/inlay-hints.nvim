@@ -11,22 +11,26 @@ function M.render_line(line, line_hints, bufnr, ns)
   local parameter_opts = opts.hints.parameter
   local type_opts = opts.hints.type
 
-  local virt_lines = {}
+  local indent = string.match(vim.api.nvim_buf_get_lines(bufnr, line, line + 1, false)[1] or '', '^%s*') or ''
+  local indent_len = string.len(indent)
   local virt_text = ""
+  local virt_texts = {{indent, ''}}
 
   for _, hint in ipairs(line_hints) do
-    local spaces = hint.range.character - string.len(virt_text)
+    local spaces = hint.range.character - indent_len - string.len(virt_text)
     if spaces < 1 then
       spaces = 1
     end
 
-    table.insert(virt_lines, {
-      string.rep(" ", spaces) .. hint.label,
+    local hint_text = string.rep(" ", spaces) .. hint.label
+    table.insert(virt_texts, {
+      hint_text,
       hint.kind == InlayHintKind.Type and type_opts.highlight
         or parameter_opts.highlight,
     })
-    virt_text = virt_text .. string.rep(" ", spaces) .. hint.label
+    virt_text = virt_text .. hint_text
   end
+  virt_text = indent .. virt_text
 
   local last_virt_text = ""
   local old = line_hints.old
@@ -50,7 +54,7 @@ function M.render_line(line, line_hints, bufnr, ns)
   ui_utils.clear_ns(bufnr, ns, line, line + 1)
   vim.api.nvim_buf_set_extmark(bufnr, ns, line, 0, {
     virt_lines = {
-      virt_lines,
+      virt_texts,
     },
   })
 end
