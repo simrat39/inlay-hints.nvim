@@ -12,11 +12,12 @@ function M.render_line(line, line_hints, bufnr, ns)
   local type_opts = opts.hints.type
 
   local indent = string.match(vim.api.nvim_buf_get_lines(bufnr, line, line + 1, false)[1] or '', '^%s*') or ''
+  local indent_len = string.len(indent)
   local virt_text = ""
   local virt_texts = {{indent, ''}}
 
   for _, hint in ipairs(line_hints) do
-    local spaces = hint.range.character - string.len(indent) - string.len(virt_text)
+    local spaces = hint.range.character - indent_len - string.len(virt_text)
     if spaces < 1 then
       spaces = 1
     end
