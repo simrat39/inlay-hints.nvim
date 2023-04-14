@@ -40,6 +40,10 @@ local defaults = {
       end,
     },
   },
+
+  adapter = {
+    tsserver = true,
+  }
 }
 
 M.options = {}
