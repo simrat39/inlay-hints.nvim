@@ -36,6 +36,14 @@ require("inlay-hints").setup({
   eol = {
     right_align = true,
   }
+
+  adapter = {
+    -- one of:
+    -- - force: use adapter for tsserver always
+    -- - disable: never adapt inlay hints for tsserver
+    -- - auto: checks whether the tsserver provides this capability as a standard one or adapts the request otherwise
+    tsserver = 'auto',
+  }
 })
 ```
 Take a look at all the possible configuration options [here](https://github.com/simrat39/inlay-hints.nvim/blob/main/lua/inlay-hints/config.lua#L3)

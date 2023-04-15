@@ -40,6 +40,14 @@ local defaults = {
       end,
     },
   },
+
+  adapter = {
+    -- one of:
+    -- - force: use adapter for tsserver always
+    -- - disable: never adapt inlay hints for tsserver
+    -- - auto: checks whether the tsserver provides this capability as a standard one or adapts the request otherwise
+    tsserver = 'auto',
+  }
 }
 
 M.options = {}
