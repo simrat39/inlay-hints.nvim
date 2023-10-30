@@ -165,7 +165,7 @@ end
 function M.cache_render(bufnr)
   local buffer = bufnr or vim.api.nvim_get_current_buf()
 
-  for _, client in ipairs(vim.lsp.buf_get_clients(buffer)) do
+  for _, client in ipairs(vim.lsp.get_active_clients({ bufnr = buffer })) do
     ih.adapter.adapt_request(client, buffer, function(err, result, ctx)
       if err then
         return
