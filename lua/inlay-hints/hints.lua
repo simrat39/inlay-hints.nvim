@@ -2,6 +2,8 @@ local ih = require("inlay-hints")
 
 local M = {}
 
+local BUFFER_AUTOCMDS = {}
+
 M.namespace = vim.api.nvim_create_namespace("textDocument/inlayHints")
 
 local function clear_ns(bufnr)
@@ -25,10 +27,26 @@ function M.unset()
   clear_ns(0)
 end
 
+local function detach_buf(bufnr)
+  BUFFER_AUTOCMDS[bufnr] = nil
+  ih.hint_cache:del(bufnr)
+end
+
 function M.on_attach(_, bufnr)
+  M.enable(bufnr)
+end
+
+-- Enable inlay-hints for bufnr
+function M.enable(bufnr)
   local opts = ih.config.options or {}
 
-  vim.api.nvim_create_autocmd({
+  if BUFFER_AUTOCMDS[bufnr] then
+    return -- Already enabled
+  end
+
+  BUFFER_AUTOCMDS[bufnr] = {}
+
+  local autocmd_id = vim.api.nvim_create_autocmd({
     "BufWritePost",
     "BufReadPost",
     "BufEnter",
@@ -43,22 +61,48 @@ function M.on_attach(_, bufnr)
     end,
   })
 
+  table.insert(BUFFER_AUTOCMDS[bufnr], autocmd_id)
+
   vim.api.nvim_buf_attach(bufnr, false, {
     on_detach = function()
-      ih.hint_cache:del(bufnr)
+      detach_buf(bufnr)
     end,
   })
 
   if opts.only_current_line then
-    vim.api.nvim_create_autocmd("CursorHold", {
+    autocmd_id = vim.api.nvim_create_autocmd("CursorHold", {
       buffer = bufnr,
       callback = function()
         ih.render()
       end,
     })
+    table.insert(BUFFER_AUTOCMDS[bufnr], autocmd_id)
   end
 
   ih.cache()
+end
+
+-- Disable inlay-hints for bufnr
+function M.disable(bufnr)
+  if BUFFER_AUTOCMDS[bufnr] == nil then
+    return -- Already disabled
+  end
+
+  for _, autocmd_id in ipairs(BUFFER_AUTOCMDS[bufnr]) do
+    vim.api.nvim_del_autocmd(autocmd_id)
+  end
+
+  detach_buf(bufnr)
+  clear_ns(bufnr)
+end
+
+-- Toggle inlay-hints for bufnr
+function M.toggle(bufnr)
+  if BUFFER_AUTOCMDS[bufnr] then
+    M.disable(bufnr)
+  else
+    M.enable(bufnr)
+  end
 end
 
 -- Parses the result into a easily usable format
